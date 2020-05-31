@@ -1,19 +1,19 @@
 # Trust_in_chatbots
-Exam in Human Computer Interaction, Cognitive Science master's, Aarhus university
-Authors: Caroline Kjær Børsting & Maria Abildtrup Madsen 
-
+Exam in Human Computer Interaction, Cognitive Science master's, Aarhus university <br/>
+Authors: Caroline Kjær Børsting & Maria Abildtrup Madsen <br/>
+<br/>
 The repository contains following two appendices: 
-
-
-<b>Appendix 1: Code. <b/>
+<br/>
+<br/>
+<b>Appendix 1: Code. </b>
 Should be executed in following order: 
-
-1a. "0_preprocessing_human.py" <br/><br/><br/>
-1b. "0_preprocessing_nonhuman.py"
-2. "1_analysis.rmd"
-
-Appendix 2: demo of chatbots 
-
+<br/>
+1a. "0_preprocessing_human.py" <br/>
+1b. "0_preprocessing_nonhuman.py" <br/>
+2. "1_analysis.rmd" <br/>
+<br/>
+Appendix 2: demo of chatbots <br/>
+<br/>
 Human-like manipulation demo: 
 
 ![Demo CountPages alpha](https://j.gifs.com/0Yj1qy.gif)
