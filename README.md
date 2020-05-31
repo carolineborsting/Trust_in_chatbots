@@ -4,7 +4,7 @@ Exam in Human Computer Interaction, Cognitive Science master's, Aarhus universit
 
 Human-like manipulation demo: 
 
-![Demo CountPages alpha](https://j.gifs.com/xnWYQB.gif)
+![Demo CountPages alpha](https://j.gifs.com/JykOLg.gif)
 
 
 Robot-like manipulation demo: 
