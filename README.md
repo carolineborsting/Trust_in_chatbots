@@ -8,7 +8,8 @@ The repository contains following two appendices:
 Appendix 1: Code. 
 Should be executed in following order: 
 
-1. "0_preprocessing.py"
+1a. "0_preprocessing_human.py"
+1b. "0_preprocessing_nonhuman.py"
 2. "1_analysis.rmd"
 
 Appendix 2: demo of chatbots 
