@@ -5,10 +5,10 @@ Authors: Caroline Kjær Børsting & Maria Abildtrup Madsen
 The repository contains following two appendices: 
 
 
-Appendix 1: Code. 
+<b>Appendix 1: Code. <b/>
 Should be executed in following order: 
 
-1a. "0_preprocessing_human.py" /n/n/n
+1a. "0_preprocessing_human.py" <br/><br/><br/>
 1b. "0_preprocessing_nonhuman.py"
 2. "1_analysis.rmd"
 
