@@ -5,7 +5,7 @@ Authors: Caroline Kjær Børsting & Maria Abildtrup Madsen
 The repository contains following two appendices: 
 
 
-Appendix 2: Code. 
+Appendix 1: Code. 
 Should be executed in following order; 
 
 1. "0_preprocessing.py"
