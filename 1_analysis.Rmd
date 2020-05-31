@@ -1,0 +1,496 @@
+---
+title: "HCI_analysis_joined"
+author: "Caroline Kjær Børsting and Maria Abildtrup Madsen"
+date: "13/5/2020"
+output: pdf_document
+---
+
+# Setting up
+```{r}
+library(pacman)
+p_load(gdata, rccdates, dplyr, magrittr, tidytext, stringr, ggplot2, scales, readxl, wordcloud, RColorBrewer, SnowballC, ggplot2, tidyr, textdata, plotrix, lme4, RColorBrewer, data.table, plotrix, gridExtra, tibble)
+
+setwd("/Users/mariaa.madsen/Google Drive/Human Computer Interaction/Analysis/") # Maria
+#setwd("/Users/Caroline/Google Drev/Human Computer Interaction/Analysis/") # Caro
+```
+
+#---------------------------------#
+#--------------HUMAN--------------#
+#---------------------------------#
+
+# Importing human data
+```{r}
+human_df <- read.csv("Data/human_df_cleaned.csv", sep=";")
+human_df <- rowid_to_column(human_df, "ID")
+human_df <- select(human_df,-X)
+
+
+#----- CREATE A DATA FRAME CONTAINING ONLY TEXT AND ID COLUMN 
+# Questionnaire
+human_questionnaire <- select(human_df, ID, Text_questionnaire)
+names(human_questionnaire)[2] <- "text"
+#human_questionnaire$text <- as.character(human_questionnaire$text)
+human_questionnaire <- mutate(human_questionnaire, text = as.character(human_questionnaire$text)) # Change from factor to text 
+
+
+# Chatbot 
+human_bot <- select(human_df, ID, Text_chat)
+names(human_bot)[2] <- "text"
+human_bot$text <- as.character(human_bot$text)
+
+# Words for wordcloud
+human_wordcloud <- select(human_df, ID,word1,word2,word3)
+human_wordcloud <-human_wordcloud %>% unite("text", word1:word3, sep=" ", remove = TRUE)
+human_wordcloud$text <- as.character(human_wordcloud$text)
+```
+
+#------Questionnaire data--------#
+
+# Most common words
+```{r}
+human_df_words  <- human_questionnaire %>%
+  distinct(text, .keep_all = TRUE) %>%
+  unnest_tokens(word, text, drop = FALSE) %>%
+  distinct(ID, word, .keep_all = TRUE) %>%
+  group_by(word) %>%
+  mutate(word_total = n()) %>%
+  ungroup()
+
+word_counts_human <- human_df_words %>%
+  count(word, sort = TRUE)
+
+word_counts_human %>%
+  head(25) %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(word, n)) +
+  geom_col(fill = "lightblue") +
+  scale_y_continuous(labels = comma_format()) +
+  coord_flip() +
+  labs(title = "Most common words aboutthe human chatbot",
+       subtitle = "Among XX answers; stop words removed",
+       y = "# of uses")
+```
+
+#------Word cloud data--------#
+
+# Most common words
+```{r}
+human_df_words  <- human_wordcloud %>%
+  distinct(text, .keep_all = TRUE) %>%
+  unnest_tokens(word, text, drop = FALSE) %>%
+  distinct(ID, word, .keep_all = TRUE) %>%
+  group_by(word) %>%
+  mutate(word_total = n()) %>%
+  ungroup()
+
+word_counts_human <- human_df_words %>%
+  count(word, sort = TRUE)
+
+word_counts_human %>%
+  head(100) %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(word, n)) +
+  geom_col(fill = "lightblue") +
+  scale_y_continuous(labels = comma_format()) +
+  coord_flip() +
+  labs(title = "Most common words about the human-like chatbot",
+       y = "# of uses")
+```
+
+# Wordcloud with most common words
+```{r}
+wordcloud(words = word_counts_human$word, freq = word_counts_human$n, min.freq = 1,
+          max.words=200, random.order=FALSE, rot.per=0, 
+          colors=brewer.pal(9, "Blues")[5:9], scale=c(3.5,.25))
+```
+
+# Sentiment scores 
+```{r}
+human_quest_single  <- human_questionnaire %>%
+  distinct(text, .keep_all = TRUE) %>%
+  unnest_tokens(word, text, drop = FALSE) %>%
+  distinct(ID, word, .keep_all = TRUE) %>%
+  group_by(word) %>%
+  ungroup() %>%
+  select(-text)
+
+human_afinn <- human_quest_single %>% 
+  inner_join(get_sentiments("afinn")) #%>% 
+  #summarise(sentiment = mean(value)) 
+
+mean(human_afinn$value)
+sd(human_afinn$value)
+```
+
+# Number of words 
+```{r}
+human_bot$nr_words <- sapply(strsplit(human_bot$text, " "), length)
+human_nr_words <- select(human_bot, -text)
+
+human_nr_words$Condition <- "human" #Sentence length
+
+mean(human_nr_words$nr_words)
+sd(human_nr_words$nr_words)
+```
+
+
+
+
+#---------------------------------#
+#--------ANALYSIS NONHUMAN--------#
+#---------------------------------#
+
+# Importing nonhuman data
+```{r}
+nonhuman_df <- read.csv("Data/nonhuman_df_cleaned.csv", sep=";")
+nonhuman_df <- rowid_to_column(nonhuman_df, "ID")
+nonhuman_df <- select(nonhuman_df,-X)
+
+#----- CREATE A DATA FRAME CONTAINING ONLY TEXT AND ID COLUMN 
+
+# Questionnaire
+nonhuman_questionnaire <- select(nonhuman_df, ID, Text_questionnaire)
+names(nonhuman_questionnaire)[2] <- "text"
+nonhuman_questionnaire$text <- as.character(nonhuman_questionnaire$text)
+
+# Chatbot 
+nonhuman_bot <- select(nonhuman_df, ID, Text_chat)
+names(nonhuman_bot)[2] <- "text"
+nonhuman_bot$text <- as.character(nonhuman_bot$text)
+
+# Words for wordcloud
+nonhuman_wordcloud <- select(nonhuman_df, ID,word1,word2,word3)
+nonhuman_wordcloud <-nonhuman_wordcloud %>% unite("text", word1:word3, sep=" ", remove = TRUE)
+nonhuman_wordcloud$text <- as.character(nonhuman_wordcloud$text)
+```
+
+# Most common words
+```{r}
+nonhuman_df_words  <- nonhuman_wordcloud %>%
+  distinct(text, .keep_all = TRUE) %>%
+  unnest_tokens(word, text, drop = FALSE) %>%
+  distinct(ID, word, .keep_all = TRUE) %>%
+  group_by(word) %>%
+  mutate(word_total = n()) %>%
+  ungroup()
+
+word_counts_nonhuman <- nonhuman_df_words %>%
+  count(word, sort = TRUE)
+
+word_counts_nonhuman %>%
+  head(100) %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(word, n)) +
+  geom_col(fill = "lightblue") +
+  scale_y_continuous(labels = comma_format()) +
+  coord_flip() +
+  labs(title = "Most common words about the nonhuman chatbot",
+       y = "# of uses")
+```
+
+#------Word cloud data--------#
+
+# Most common words
+```{r}
+nonhuman_df_words  <- nonhuman_wordcloud %>%
+  distinct(text, .keep_all = TRUE) %>%
+  unnest_tokens(word, text, drop = FALSE) %>%
+  distinct(ID, word, .keep_all = TRUE) %>%
+  group_by(word) %>%
+  mutate(word_total = n()) %>%
+  ungroup()
+
+word_counts_nonhuman <- nonhuman_df_words %>%
+  count(word, sort = TRUE)
+
+word_counts_nonhuman %>%
+  head(100) %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(word, n)) +
+  geom_col(fill = "lightblue") +
+  scale_y_continuous(labels = comma_format()) +
+  coord_flip() +
+  labs(title = "Most common words about the human-like chatbot",
+       y = "# of uses")
+```
+
+# Sentiment analysis
+```{r}
+nonhuman_quest_single  <- nonhuman_questionnaire %>%
+  distinct(text, .keep_all = TRUE) %>%
+  unnest_tokens(word, text, drop = FALSE) %>%
+  distinct(ID, word, .keep_all = TRUE) %>%
+  group_by(word) %>%
+  ungroup() %>%
+  select(-text)
+
+nonhuman_afinn <- nonhuman_quest_single %>% 
+  inner_join(get_sentiments("afinn"))  
+  #summarise(sentiment = mean(value)) %>% 
+
+mean(nonhuman_afinn$value)
+sd(nonhuman_afinn$value)
+```
+
+# Number of words 
+```{r}
+nonhuman_bot$nr_words <- sapply(strsplit(nonhuman_bot$text, " "), length)
+nonhuman_nr_words <- select(nonhuman_bot, -text)
+
+nonhuman_nr_words$Condition <- "Non_human" #Sentence length
+mean(nonhuman_nr_words$nr_words)
+sd(nonhuman_nr_words$nr_words)
+```
+
+
+
+
+
+#---------------------------------#
+#-----------COMPARISON------------#
+#---------------------------------#
+
+
+#Sentiment for each participant
+```{r}
+human_afinn <- as.data.table(human_afinn)
+human_afinn_agg <- human_afinn[,(sentiment = mean(value)), by = ID]
+human_afinn_agg$Condition <- "human"
+
+nonhuman_afinn <- as.data.table(nonhuman_afinn)
+nonhuman_afinn_agg <- nonhuman_afinn[,(sentiment = mean(value)), by = ID]
+nonhuman_afinn_agg$Condition <- "Non_human"
+
+human_df <- left_join(human_df,human_afinn_agg, by = c("ID","Condition"))
+nonhuman_df <- left_join(nonhuman_df,nonhuman_afinn_agg, by = c("ID","Condition"))
+
+human_df <- setnames(human_df, "V1", "Sentiment")
+nonhuman_df <- setnames(nonhuman_df, "V1", "Sentiment")
+
+
+```
+
+#Nr of words for each participant
+```{r}
+human_nr_words <- as.data.table(human_nr_words)
+human_nr_words_agg <- human_nr_words[,(nr_words = mean(nr_words)), by = c("ID","Condition")]
+
+nonhuman_nr_words <- as.data.table(nonhuman_nr_words)
+nonhuman_nr_words_agg <- nonhuman_nr_words[,(nr_words = mean(nr_words)), by = c("ID","Condition")]
+
+human_df <- left_join(human_df,human_nr_words_agg, by = c("ID","Condition"))
+nonhuman_df <- left_join(nonhuman_df,nonhuman_nr_words_agg, by = c("ID","Condition"))
+
+human_df <- setnames(human_df, "V1", "nr_words")
+nonhuman_df <- setnames(nonhuman_df, "V1", "nr_words")
+
+```
+
+#Creating a joined dataframe
+```{r}
+df <- as.data.table(rbind(human_df,nonhuman_df))
+
+# Converting answers to numerical 
+df$Q_trust <- ifelse(df$Q_trust == "Strongly disagree",1,ifelse(df$Q_trust == "Disagree",2,ifelse(df$Q_trust == "Neutral",3,ifelse(df$Q_trust == "Agree",4,ifelse(df$Q_trust == "Strongly agree",5,df$Q_trust))))) 
+
+df$Q_follow <- ifelse(df$Q_follow == "Strongly disagree",1,ifelse(df$Q_follow == "Disagree",2,ifelse(df$Q_follow == "Neutral",3,ifelse(df$Q_follow == "Agree",4,ifelse(df$Q_follow == "Strongly agree",5,df$Q_follow))))) 
+
+df$Q_contribution <- ifelse(df$Q_contribution == "Strongly disagree",1,ifelse(df$Q_contribution == "Disagree",2,ifelse(df$Q_contribution == "Neutral",3,ifelse(df$Q_contribution == "Agree",4,ifelse(df$Q_contribution == "Strongly agree",5,df$Q_contribution))))) 
+```
+
+# Bar charts
+```{r}
+
+#-------AGGREGATED DATASETS 
+
+# nr words data 
+nr_words_agg <- df[,list(mean = mean(nr_words), sd = sd(nr_words), SE = std.error(nr_words)), by = Condition]
+nr_words_agg$ci_lower <- nr_words_agg$mean-nr_words_agg$SE*1.96 #lower confidence interval
+nr_words_agg$ci_upper <- nr_words_agg$mean+nr_words_agg$SE*1.96 #upper confidence interval
+
+# sentiment data 
+sentiment_agg <- df[,list(mean = mean(Sentiment, na.rm = TRUE), sd = sd(Sentiment, na.rm = TRUE), SE = std.error(Sentiment)), by = Condition]
+sentiment_agg$ci_lower <- sentiment_agg$mean-sentiment_agg$SE*1.96 #lower confidence interval
+sentiment_agg$ci_upper <- sentiment_agg$mean+sentiment_agg$SE*1.96 #upper confidence interval
+
+# Q_contribution 
+cont_agg <- df[,list(mean = mean(Q_contribution), sd = sd(Q_contribution), SE = std.error(Q_contribution)), by = Condition]
+cont_agg$ci_lower <- cont_agg$mean-cont_agg$SE*1.96 #lower confidence interval
+cont_agg$ci_upper <- cont_agg$mean+cont_agg$SE*1.96 #upper confidence interval
+
+# Q_trust
+trust_agg <- df[,list(mean = mean(Q_trust), sd = sd(Q_trust), SE = std.error(Q_trust)), by = Condition]
+trust_agg$ci_lower <- trust_agg$mean-trust_agg$SE*1.96 #lower confidence interval
+trust_agg$ci_upper <- trust_agg$mean+trust_agg$SE*1.96 #upper confidence interval
+
+# Q_follow
+fol_agg <- df[,list(mean = mean(Q_follow), sd = sd(Q_follow), SE = std.error(Q_follow)), by = Condition]
+fol_agg$ci_lower <- fol_agg$mean-fol_agg$SE*1.96 #lower confidence interval
+fol_agg$ci_upper <- fol_agg$mean+fol_agg$SE*1.96 #upper confidence interval
+
+# Q_overall
+over_agg <- df[,list(mean = mean(Q_overall), sd = sd(Q_overall), SE = std.error(Q_overall)), by = Condition]
+over_agg$ci_lower <- over_agg$mean-over_agg$SE*1.96 #lower confidence interval
+over_agg$ci_upper <- over_agg$mean+over_agg$SE*1.96 #upper confidence interval
+
+#Sentence length
+p_sentence <- ggplot(nr_words_agg, aes(Condition, mean))+
+  geom_histogram(stat = "identity", binwidth = 100, fill = c("#4292C6","#08519C"), alpha = 0.8) +
+  labs(y = "Number of words", x = "Condition", title = "Difference in number of words")+
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.25)+
+  theme_light()+
+  ylim(0,20)
+p_sentence
+
+#Sentiment
+p_sentiment <- ggplot(sentiment_agg, aes(Condition, mean))+
+  geom_histogram(stat = "identity", binwidth = 100, fill = c("#4292C6","#08519C"), alpha = 0.8) + 
+  labs(y = "Sentiment", x = "Condition", title = "Difference in sentiment")+
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.25)+
+  theme_light()+
+  ylim(0,2.5)#+
+  #geom_hline(yintercept = mean(sentiment_agg$mean),color="blue", linetype = "dashed")
+p_sentiment
+
+# Contribution
+p_cont <- ggplot(cont_agg, aes(Condition, mean))+
+  geom_histogram(stat = "identity", binwidth = 100, fill = c("#4292C6","#08519C"), alpha = 0.8) + 
+  labs(y = " ", x = "Condition", title = "Positive contribution")+
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.25)+
+  theme_light()+
+  ylim(0,5)
+p_cont
+
+#Trust
+p_trust <- ggplot(trust_agg, aes(Condition, mean))+
+  geom_histogram(stat = "identity", binwidth = 100, fill = c("#4292C6","#08519C"), alpha = 0.8) + 
+  labs(y = " ", x = "Condition", title = "Trust the advice")+
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.25)+
+  theme_light()+
+  ylim(0,5)
+p_trust
+
+#Follow
+p_follow <- ggplot(fol_agg, aes(Condition, mean))+
+  geom_histogram(stat = "identity", binwidth = 100, fill = c("#4292C6","#08519C"), alpha = 0.8) + 
+  labs(y = " ", x = "Condition", title = "Will follow the advice")+
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.25)+
+  theme_light()+
+  ylim(0,5)
+p_follow
+
+#Overall
+p_overall <- ggplot(over_agg, aes(Condition, mean))+
+  geom_histogram(stat = "identity", binwidth = 100, fill = c("#4292C6","#08519C"), alpha = 0.8) + 
+  labs(y = " ", x = "Condition", title = "Overall experience")+
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.25)+
+  theme_light()+
+  ylim(0,10)
+p_overall
+
+#Arrange plots
+grid.arrange(p_sentence,p_sentiment, ncol=2)
+grid.arrange(p_trust,p_follow,p_cont,p_overall, nrow = 2, ncol=2)
+```
+
+# Models (OLR)
+```{r}
+#Website expalining OLR interpretations
+
+#-----Trust-----#
+
+(summary(MASS::polr(as.factor(Q_trust) ~ Condition, data = df, Hess=TRUE)))
+# COEF value: for one unit increase in condition (that is, going from human to nonhuman) we except about -0.78  # decrease in the expected value of "trust" in the log odds scale"""
+m1<-MASS::polr(as.factor(Q_trust) ~ Condition, data = df, Hess=TRUE)
+table_1 <- coef(summary(MASS::polr(as.factor(Q_trust) ~ Condition, data = df, Hess=TRUE)))
+p <- pnorm(abs(table_1[, "t value"]), lower.tail = FALSE) * 2 # calculate and store p values
+table_1 <- cbind(table_1, "p value" = p) # combined table
+table_1
+
+exp(m1$coefficients) # Exponentiated coefficient 
+
+#-Calulating the cumulative probabilities-#
+#non-human (calculating the inverse logit)
+exp(m1$zeta - m1$coefficients)/(1 + exp(m1$zeta - m1$coefficients))
+#human 
+exp(m1$zeta)/(1 + exp(m1$zeta))
+
+
+
+#-----Follow-----#
+
+(summary(MASS::polr(as.factor(Q_follow) ~ Condition, data = df, Hess=TRUE)))
+# COEF value: for one unit increase in condition (that is, going from human to nonhuman) we except about -0.78  # decrease in the expected value of "trust" in the log odds scale"""
+m2<-MASS::polr(as.factor(Q_follow) ~ Condition, data = df, Hess=TRUE)
+table_2 <- coef(summary(MASS::polr(as.factor(Q_follow) ~ Condition, data = df, Hess=TRUE)))
+p <- pnorm(abs(table_2[, "t value"]), lower.tail = FALSE) * 2 # calculate and store p values
+table_2 <- cbind(table_2, "p value" = p) # combined table
+table_2
+
+exp(m2$coefficients) # Exponentiated coefficient 
+
+#-Calulating the cumulative probabilities-#
+#non-human (calculating the inverse logit)
+exp(m2$zeta - m2$coefficients)/(1 + exp(m2$zeta - m2$coefficients))
+#human 
+exp(m2$zeta)/(1 + exp(m2$zeta))
+
+
+
+#-----Contribution-----#
+
+(summary(MASS::polr(as.factor(Q_contribution) ~ Condition, data = df, Hess=TRUE)))
+# COEF value: for one unit increase in condition (that is, going from human to nonhuman) we except about -0.78  # decrease in the expected value of "trust" in the log odds scale"""
+m3<-MASS::polr(as.factor(Q_contribution) ~ Condition, data = df, Hess=TRUE)
+table_3 <- coef(summary(MASS::polr(as.factor(Q_contribution) ~ Condition, data = df, Hess=TRUE)))
+p <- pnorm(abs(table_3[, "t value"]), lower.tail = FALSE) * 2 # calculate and store p values
+table_3 <- cbind(table_3, "p value" = p) # combined table
+table_3
+
+exp(m3$coefficients) # Exponentiated coefficient 
+
+#-Calulating the cumulative probabilities-#
+#non-human (calculating the inverse logit)
+exp(m3$zeta - m3$coefficients)/(1 + exp(m3$zeta - m3$coefficients))
+#human 
+exp(m3$zeta)/(1 + exp(m3$zeta))
+
+```
+
+# Models (LM)
+```{r}
+####  Overall experience
+summary(lm(Q_overall ~ Condition, data = df)) #almost significant
+summary(lm(Q_overall ~ Age, data = df))
+summary(lm(Q_overall ~ nr_words, data = df))
+summary(lm(Q_overall ~ Healthcare, data = df))
+summary(lm(Q_overall ~ Condition*Healthcare, data = df)) #sigificant
+summary(lm(Q_overall ~ Condition*Healthcare + Sentiment, data = df))
+
+
+#plot the visualize this interaction effect:
+overall_agg <- df[,list(mean = mean(Q_overall), SE = std.error(Q_overall)),by = c("Healthcare","Condition")]
+overall_agg$ci_lower <- overall_agg$mean-overall_agg$SE*1.96 #lower confidence interval
+overall_agg$ci_upper <- overall_agg$mean+overall_agg$SE*1.96 #upper confidence interval
+
+labs <- c(human = "Human", Non_human = "Non human")
+ggplot(overall_agg, aes(Healthcare, mean, fill = Healthcare))+
+  labs(y="Overall rating") +
+  geom_bar(stat = "identity", alpha = 0.8)+
+  facet_grid(~Condition, labeller = labeller(Condition = labs))+
+  scale_fill_manual(values = c("#4292C6","#08519C"))+
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.25)+
+  theme_light()
+
+### Sentiment
+summary(lm(Sentiment ~ Condition, data = df))
+summary(lm(Sentiment ~ Condition + Age, data = df))
+summary(lm(Sentiment ~ Age, data = df))
+
+### Sentence length
+summary(lm(nr_words ~ Condition, data = df))
+summary(lm(nr_words ~ Condition + Age, data = df))
+summary(lm(nr_words ~ Condition*Age, data = df))
+summary(lm(nr_words ~ Age, data = df))
+```
+
