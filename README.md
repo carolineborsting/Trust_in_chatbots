@@ -4,7 +4,7 @@ Exam in Human Computer Interaction, Cognitive Science master's, Aarhus universit
 
 Human-like manipulation demo: 
 
-![Demo CountPages alpha width="50%"](https://j.gifs.com/D1KGMK.gif)
+![Demo CountPages alpha width="50%"](https://gifs.com/gif/human-like-chatbot-demo-D1KGMK)
 
 Full video available here: https://www.youtube.com/watch?v=CaUYGABLZzQ
 
