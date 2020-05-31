@@ -21,7 +21,7 @@ Full video available here: https://www.youtube.com/watch?v=CaUYGABLZzQ
 
 <b> Robot-like manipulation demo: </b>
 
-![Demo CountPages alpha](https://j.gifs.com/jZWExy.gif)
+![Demo CountPages alpha](https://j.gifs.com/YWD2Mp.gif)
 
 Full video available here: 
 https://www.youtube.com/watch?v=6olQQaa4Oig
