@@ -15,7 +15,7 @@ Should be executed in following order:
 <br/>
 <b> Human-like manipulation demo: </b>
 
-![Demo CountPages alpha](https://j.gifs.com/0Yj1qy.gif)
+![Demo CountPages alpha](https://j.gifs.com/6Xpg09.gif)
 
 Full video available here: https://www.youtube.com/watch?v=CaUYGABLZzQ
 
