@@ -4,7 +4,6 @@
 <br/>
 The repository contains following two appendices: 
 <br/>
-<br/>
 ### Appendix 1: Code.
 Should be executed in following order: 
 <br/>
@@ -14,13 +13,13 @@ Should be executed in following order:
 <br/>
 ### Appendix 2: demo of chatbots <br/>
 <br/>
-#### Human-like manipulation demo: 
+<b> Human-like manipulation demo: </b>
 
 ![Demo CountPages alpha](https://j.gifs.com/0Yj1qy.gif)
 
 Full video available here: https://www.youtube.com/watch?v=CaUYGABLZzQ
 
-#### Robot-like manipulation demo: 
+<b> Robot-like manipulation demo: </b>
 
 ![Demo CountPages alpha](https://j.gifs.com/jZWExy.gif)
 
