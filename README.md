@@ -6,12 +6,10 @@ The repository contains following two appendices:
 
 
 Appendix 1: Code. 
-Should be executed in following order; 
+Should be executed in following order: 
 
 1. "0_preprocessing.py"
-2. Analysis: "1_analysis.rmd"
-
-
+2. "1_analysis.rmd"
 
 Appendix 2: demo of chatbots 
 
