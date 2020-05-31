@@ -1,6 +1,6 @@
 # Trust_in_chatbots
-### Exam in Human Computer Interaction, Cognitive Science master's, Aarhus university <br/>
-### Authors: Caroline Kjær Børsting & Maria Abildtrup Madsen <br/>
+<b>Exam in Human Computer Interaction, Cognitive Science master's, Aarhus university </b> <br/>
+<b>Authors: Caroline Kjær Børsting & Maria Abildtrup Madsen </b> <br/>
 <br/>
 The repository contains following two appendices: 
 <br/>
