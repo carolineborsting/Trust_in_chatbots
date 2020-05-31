@@ -5,7 +5,15 @@ Authors: Caroline Kjær Børsting & Maria Abildtrup Madsen
 The repository contains following two appendices: 
 
 
-Appendix 1: demo of chatbots 
+Appendix 2: Code. 
+Should be executed in following order; 
+
+1. "0_preprocessing.py"
+2. Analysis: "1_analysis.rmd"
+
+
+
+Appendix 2: demo of chatbots 
 
 Human-like manipulation demo: 
 
@@ -19,9 +27,3 @@ Robot-like manipulation demo:
 
 Full video available here: 
 https://www.youtube.com/watch?v=6olQQaa4Oig
-
-Appendix 2: Code. 
-Should be executed in following order; 
-
-1. "0_preprocessing.py"
-2. Analysis: "1_analysis.rmd"
