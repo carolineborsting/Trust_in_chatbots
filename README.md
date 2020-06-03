@@ -2,7 +2,7 @@
 <b>Exam in Human Computer Interaction, Cognitive Science master's, Aarhus university </b> <br/>
 <b>Authors: Caroline Kjær Børsting & Maria Abildtrup Madsen </b> <br/>
 <br/>
-The repository contains following two appendices: 
+The repository contains following appendices: 
 <br/>
 ### Appendix 1: Code.
 Should be executed in following order: 
