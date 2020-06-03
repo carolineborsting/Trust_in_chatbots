@@ -3,7 +3,7 @@
 """
 Created on Fri May  8 10:57:13 2020
 
-@author: mariaa.madsen
+@author: Maria Abildtrup Madsen & Caroline Kjær Børsting 
 """
 
 
